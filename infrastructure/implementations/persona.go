@@ -44,3 +44,22 @@ func (p2 *personaSql) ConsultarPorCorreo(correo string) (*entities.Persona, erro
 	}
 	return row, err
 }
+
+func (p2 *personaSql) Listar(pagina, limite int) ([]*entities.Persona, int64, error) {
+
+	var rows []*entities.Persona
+	var total int64
+
+	if err := p2.db.Model(&entities.Persona{}).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := p2.db.
+		Limit(limite).Offset((pagina - 1) * limite).
+		Find(&rows).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return rows, total, nil
+
+}

@@ -7,6 +7,7 @@ type PersonaManager interface {
 	Actualizar(p *Persona) error
 	ConsultarPorId(id string) (*Persona, error)
 	ConsultarPorCorreo(correo string) (*Persona, error)
+	Listar(pagina, limite int) ([]*Persona, int64, error)
 }
 type Persona struct {
 	ID              string

@@ -5,15 +5,13 @@ package graph
 
 import (
 	"context"
-	"fmt"
-	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/configs"
-	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/infrastructure/hasher"
-
 	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/application"
+	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/configs"
 	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/graph/generated"
 	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/graph/model"
 	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/graph/translators"
 	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/infrastructure/db/postgres"
+	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/infrastructure/hasher"
 	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/infrastructure/implementations"
 )
 
@@ -45,8 +43,21 @@ func (r *mutationResolver) RegistrarNuevaPersona(ctx context.Context, input mode
 	return result, nil
 }
 
-func (r *queryResolver) Resultados(ctx context.Context) ([]*model.Persona, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *queryResolver) Personas(ctx context.Context) ([]*model.Persona, error) {
+
+	db := postgres.GetDB().WithContext(ctx)
+	p := implementations.NewPersonaSql(db)
+	l := implementations.NewLoginSql(db)
+	h := hasher.NewHasher256(configs.GetConfig().SecretHashKey)
+	cu := application.NewPersonaCasosUso(p, l, h)
+
+	ps, _, err := cu.Listar(1, 100)
+	if err != nil {
+		return nil, err
+	}
+	personas := translators.PersonasEntityToAPI(ps)
+
+	return personas, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

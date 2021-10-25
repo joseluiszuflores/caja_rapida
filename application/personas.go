@@ -45,3 +45,12 @@ func (cu *personaCasosUso) RegistrarNuevaPersona(p *entities.Persona, password s
 	}
 	return nil
 }
+
+func (cu *personaCasosUso) Listar(pagina, limite int) ([]*entities.Persona, int64, error) {
+	personas, total, err := cu.personas.Listar(pagina, limite)
+	if err != nil {
+		return nil, 0, ErrInternalError
+	}
+
+	return personas, total, nil
+}

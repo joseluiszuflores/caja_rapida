@@ -31,3 +31,11 @@ func PersonaEntityToAPI(p *entities.Persona) *model.Persona {
 		Telefono: p.Telefono,
 	}
 }
+
+func PersonasEntityToAPI(ps []*entities.Persona) []*model.Persona {
+	result := make([]*model.Persona,0,len(ps))
+	for _,persona := range ps {
+		result = append(result, PersonaEntityToAPI(persona))
+	}
+	return result
+}

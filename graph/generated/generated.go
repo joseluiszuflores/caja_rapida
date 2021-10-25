@@ -58,7 +58,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Resultados func(childComplexity int) int
+		Personas func(childComplexity int) int
 	}
 
 	User struct {
@@ -72,7 +72,7 @@ type MutationResolver interface {
 	RegistrarNuevaPersona(ctx context.Context, input model.NewUsuarioSistema) (*model.Persona, error)
 }
 type QueryResolver interface {
-	Resultados(ctx context.Context) ([]*model.Persona, error)
+	Personas(ctx context.Context) ([]*model.Persona, error)
 }
 
 type executableSchema struct {
@@ -156,12 +156,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Persona.Telefono(childComplexity), true
 
-	case "Query.resultados":
-		if e.complexity.Query.Resultados == nil {
+	case "Query.personas":
+		if e.complexity.Query.Personas == nil {
 			break
 		}
 
-		return e.complexity.Query.Resultados(childComplexity), true
+		return e.complexity.Query.Personas(childComplexity), true
 
 	case "User.id":
 		if e.complexity.User.ID == nil {
@@ -273,7 +273,7 @@ type User {
 }
 
 type Query {
-    resultados: [Persona!]!
+    personas: [Persona!]!
 }
 
 
@@ -664,7 +664,7 @@ func (ec *executionContext) _Persona_telefono(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_resultados(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_personas(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -682,7 +682,7 @@ func (ec *executionContext) _Query_resultados(ctx context.Context, field graphql
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Resultados(rctx)
+		return ec.resolvers.Query().Personas(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2192,7 +2192,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "resultados":
+		case "personas":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -2200,7 +2200,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_resultados(ctx, field)
+				res = ec._Query_personas(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
