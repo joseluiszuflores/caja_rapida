@@ -1,0 +1,35 @@
+version: "3.4"
+
+services:
+  service:
+    container_name: service
+    env_file:
+      - .env.template
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 9091:8080
+    depends_on:
+      - postgres_cr
+    networks:
+      - default 
+      - crnet
+
+  postgres_cr:
+    restart: always
+    image: postgres:10.11
+    container_name: postgres_cr
+    ports:
+      - 5455:5432
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: crapp
+      POSTGRES_PASSWORD: 54C4t34L4V3R64!!
+      POSTGRES_DB: caja_rapida
+
+networks: 
+  crnet:
+    external: true
