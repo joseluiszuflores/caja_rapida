@@ -5,31 +5,17 @@ package graph
 
 import (
 	"context"
-	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/entities"
 
-	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/application"
-	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/configs"
 	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/graph/generated"
 	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/graph/model"
 	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/graph/translators"
-	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/infrastructure/db/postgres"
-	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/infrastructure/hasher"
-	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/infrastructure/implementations"
 )
 
-func getCasosUsoPersona(ctx context.Context) entities.UcPersonas {
-	db := postgres.GetDB().WithContext(ctx)
-	p := implementations.NewPersonaSql(db)
-	h := hasher.NewHasher256(configs.GetConfig().SecretHashKey)
-	cu := application.NewPersonaCasosUso(p, h)
-	return cu
-}
 func (r *mutationResolver) Login(ctx context.Context, input model.Login) (string, error) {
 	return "token", nil
 }
 
 func (r *mutationResolver) RegistrarNuevaPersona(ctx context.Context, input model.NewUsuarioSistema) (*model.Persona, error) {
-
 	cu := getCasosUsoPersona(ctx)
 
 	persona := translators.NuevaPersonaAPIToEntity(&input)
