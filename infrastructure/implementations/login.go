@@ -3,7 +3,6 @@ package implementations
 import (
 	"errors"
 	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/entities"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gorm.io/gorm"
 	"strings"
 )
@@ -23,9 +22,4 @@ func (l *loginSql) ConsultarUsuario(username string) (*entities.Credencial, erro
 		return nil, nil
 	}
 	return row, err
-}
-
-func (l *loginSql)GuardarCredencial(c *entities.Credencial) error {
-	c.ID = primitive.NewObjectID().Hex()
-	return l.db.Create(c).Error
 }

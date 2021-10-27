@@ -19,10 +19,6 @@ input NewUsuarioSistema {
     password: String!
 }
 
-input Paginacion {
-    pagina: Int!
-    limite: Int!
-}
 
 type User {
     id: ID!

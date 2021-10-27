@@ -262,10 +262,6 @@ input NewUsuarioSistema {
     password: String!
 }
 
-input Paginacion {
-    pagina: Int!
-    limite: Int!
-}
 
 type User {
     id: ID!
@@ -2056,37 +2052,6 @@ func (ec *executionContext) unmarshalInputNewUsuarioSistema(ctx context.Context,
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputPaginacion(ctx context.Context, obj interface{}) (model.Paginacion, error) {
-	var it model.Paginacion
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	for k, v := range asMap {
-		switch k {
-		case "pagina":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pagina"))
-			it.Pagina, err = ec.unmarshalNInt2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "limite":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limite"))
-			it.Limite, err = ec.unmarshalNInt2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -2525,21 +2490,6 @@ func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface
 
 func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalID(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
-}
-
-func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
-	res, err := graphql.UnmarshalInt(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
-	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

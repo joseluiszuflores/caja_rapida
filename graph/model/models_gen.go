@@ -16,11 +16,6 @@ type NewUsuarioSistema struct {
 	Password        string  `json:"password"`
 }
 
-type Paginacion struct {
-	Pagina int `json:"pagina"`
-	Limite int `json:"limite"`
-}
-
 type Persona struct {
 	ID              string  `json:"id"`
 	Nombre          string  `json:"nombre"`

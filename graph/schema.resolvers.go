@@ -5,6 +5,8 @@ package graph
 
 import (
 	"context"
+	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/entities"
+
 	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/application"
 	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/configs"
 	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/graph/generated"
@@ -15,41 +17,33 @@ import (
 	"github.com/PerezBautistaAntonioDeJesus/caja_rapida/infrastructure/implementations"
 )
 
+func getCasosUsoPersona(ctx context.Context) entities.UcPersonas {
+	db := postgres.GetDB().WithContext(ctx)
+	p := implementations.NewPersonaSql(db)
+	h := hasher.NewHasher256(configs.GetConfig().SecretHashKey)
+	cu := application.NewPersonaCasosUso(p, h)
+	return cu
+}
 func (r *mutationResolver) Login(ctx context.Context, input model.Login) (string, error) {
 	return "token", nil
 }
 
 func (r *mutationResolver) RegistrarNuevaPersona(ctx context.Context, input model.NewUsuarioSistema) (*model.Persona, error) {
-	db := postgres.GetDB().WithContext(ctx).Begin()
-	if db.Error != nil {
-		return nil, application.ErrInternalError
-	}
-	defer db.Rollback()
 
-	p := implementations.NewPersonaSql(db)
-	l := implementations.NewLoginSql(db)
-	h := hasher.NewHasher256(configs.GetConfig().SecretHashKey)
-	cu := application.NewPersonaCasosUso(p, l, h)
+	cu := getCasosUsoPersona(ctx)
 
 	persona := translators.NuevaPersonaAPIToEntity(&input)
 	if err := cu.RegistrarNuevaPersona(persona, input.Password); err != nil {
 		return nil, err
 	}
-	if err := db.Commit().Error; err != nil {
-		return nil, application.ErrInternalError
-	}
+
 	result := translators.PersonaEntityToAPI(persona)
 
 	return result, nil
 }
 
 func (r *queryResolver) Personas(ctx context.Context) ([]*model.Persona, error) {
-
-	db := postgres.GetDB().WithContext(ctx)
-	p := implementations.NewPersonaSql(db)
-	l := implementations.NewLoginSql(db)
-	h := hasher.NewHasher256(configs.GetConfig().SecretHashKey)
-	cu := application.NewPersonaCasosUso(p, l, h)
+	cu := getCasosUsoPersona(ctx)
 
 	ps, _, err := cu.Listar(1, 100)
 	if err != nil {
