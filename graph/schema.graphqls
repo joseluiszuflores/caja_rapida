@@ -26,7 +26,7 @@ type User {
 }
 
 type Query {
-    personas: [Persona!]!
+    personas(page: Int limit: Int): [Persona!]!
 }
 
 

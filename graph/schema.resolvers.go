@@ -28,10 +28,24 @@ func (r *mutationResolver) RegistrarNuevaPersona(ctx context.Context, input mode
 	return result, nil
 }
 
-func (r *queryResolver) Personas(ctx context.Context) ([]*model.Persona, error) {
+func (r *queryResolver) Personas(ctx context.Context, page *int, limit *int) ([]*model.Persona, error) {
+	pagina := 1
+	limite := 10
+	if page != nil {
+		pagina = *page
+		if *page <= 0 {
+			pagina = 1
+		}
+	}
+	if limit != nil {
+		limite = *limit
+		if limite <= 1 || limite >= 50{
+			limite = 10
+		}
+	}
 	cu := getCasosUsoPersona(ctx)
 
-	ps, _, err := cu.Listar(1, 100)
+	ps, _, err := cu.Listar(pagina, limite)
 	if err != nil {
 		return nil, err
 	}
